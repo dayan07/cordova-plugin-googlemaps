@@ -22,6 +22,10 @@ public class ObjectCache {
     return objects.remove(key);
   }
 
+  public void removeKey(String key) {
+    keys.remove(key);
+  }
+
   public Object get(String key) {
     return objects.get(key);
   }
