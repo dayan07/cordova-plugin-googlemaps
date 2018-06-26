@@ -104,9 +104,8 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
           //--------------------------------------
           AsyncTask task;
           if (iconLoadingTasks != null && iconLoadingTasks.size() > 0) {
-            int i, ilen = iconLoadingTasks.size();
-            for (i = 0; i < ilen; i++) {
-              task = iconLoadingTasks.get(i);
+            for(HashMap.Entry<Integer, AsyncTask> iconLoadingTask : iconLoadingTasks.entrySet()){
+              task = iconLoadingTasks.get(iconLoadingTask.getKey());
               task.cancel(true);
             }
           }
@@ -118,19 +117,15 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
       // Recycle bitmaps as much as possible
       //--------------------------------------
       if (iconCacheKeys != null) {
-        String[] cacheKeys = iconCacheKeys.keySet().toArray(new String[iconCacheKeys.size()]);
-        for (int i = 0; i < cacheKeys.length; i++) {
-          AsyncLoadImage.removeBitmapFromMemCahce(cacheKeys[i]);
-          iconCacheKeys.remove(cacheKeys[i]);
+        for(HashMap.Entry<String, Integer> iconCacheKey : iconCacheKeys.entrySet()) {
+          AsyncLoadImage.removeBitmapFromMemCahce(iconCacheKey.getKey());
+          iconCacheKeys.remove(iconCacheKey.getKey());
         }
-        cacheKeys = null;
       }
       if (icons != null) {
-        String[] keys = icons.keySet().toArray(new String[icons.size()]);
-        //Bitmap[] cachedBitmaps = icons.toArray(new Bitmap[icons.size()]);
         Bitmap image;
-        for (int i = 0; i < keys.length; i++) {
-          image = icons.remove(keys[i]);
+        for(HashMap.Entry<String, Bitmap> icon : icons.entrySet()) {
+          image = icons.remove(icon.getKey());
           if (image != null && !image.isRecycled()) {
             image.recycle();
           }
@@ -154,10 +149,15 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
                   !objectId.startsWith("marker_property_") &&
                   !objectId.startsWith("marker_imageSize") &&
                   !objectId.startsWith("marker_icon_")) {
-                Marker marker = (Marker) pluginMap.objects.remove(objectId);
-                marker.setTag(null);
-                marker.remove();
-                marker = null;
+                if(pluginMap.objects.get(objectId)!=null) {
+                  Marker marker = (Marker) pluginMap.objects.remove(objectId);
+                  marker.setTag(null);
+                  marker.remove();
+                  marker = null;
+                }
+                else{
+                  pluginMap.objects.removeKey(objectId);
+                }
               } else {
                 Object object = pluginMap.objects.remove(objectId);
                 object = null;
@@ -293,6 +293,9 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        if(markerOptions == null){
+          return;
+        }
         final Marker marker = map.addMarker(markerOptions);
         marker.setTag(markerId);
         marker.hideInfoWindow();
@@ -493,6 +496,10 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
       @Override
       public void run() {
         final Handler handler = new Handler();
+        if(map == null){
+          callback.onPostExecute(marker);
+          return;
+        }
         final Projection proj = map.getProjection();
         final LatLng markerLatLng = marker.getPosition();
         final Point markerPoint = proj.toScreenLocation(markerLatLng);
@@ -836,8 +843,9 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
       public void run() {
 
         pluginMap.objects.remove(id);
-        _removeMarker(marker);
-
+        if (marker != null){
+          _removeMarker(marker);
+        }
         callbackContext.success();
       }
     });
