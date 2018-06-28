@@ -66,10 +66,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Set<String> keySet = pluginMap.objects.keys;
-        String[] objectIdArray = keySet.toArray(new String[keySet.size()]);
-
-        for (String objectId : objectIdArray) {
+        for (String objectId : pluginMap.objects.keys) {
           if (pluginMap.objects.containsKey(objectId)) {
             if (objectId.startsWith("marker_") &&
                 !objectId.startsWith("marker_property_") &&
