@@ -149,15 +149,10 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
                   !objectId.startsWith("marker_property_") &&
                   !objectId.startsWith("marker_imageSize") &&
                   !objectId.startsWith("marker_icon_")) {
-                if(pluginMap.objects.get(objectId)!=null) {
                   Marker marker = (Marker) pluginMap.objects.remove(objectId);
                   marker.setTag(null);
                   marker.remove();
                   marker = null;
-                }
-                else{
-                  pluginMap.objects.removeKey(objectId);
-                }
               } else {
                 Object object = pluginMap.objects.remove(objectId);
                 object = null;
@@ -497,7 +492,6 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
       public void run() {
         final Handler handler = new Handler();
         if(map == null){
-          callback.onPostExecute(marker);
           return;
         }
         final Projection proj = map.getProjection();
