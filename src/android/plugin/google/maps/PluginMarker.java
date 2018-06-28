@@ -140,10 +140,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
       cordova.getActivity().runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          Set<String> keySet = pluginMap.objects.keys;
-          String[] objectIdArray = keySet.toArray(new String[keySet.size()]);
-
-          for (String objectId : objectIdArray) {
+          for (String objectId : pluginMap.objects.keys) {
             if (pluginMap.objects.containsKey(objectId)) {
               if (objectId.startsWith("marker_") &&
                   !objectId.startsWith("marker_property_") &&
@@ -288,7 +285,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        if(markerOptions == null){
+        if(map == null){
           return;
         }
         final Marker marker = map.addMarker(markerOptions);
@@ -861,7 +858,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface  {
     //---------------------------------------------------------------------------------
     if (pluginMap.objects.containsKey(iconCacheKey)) {
       String cacheKey = (String) pluginMap.objects.remove(iconCacheKey);
-      if (iconCacheKeys.containsKey(cacheKey)) {
+      if (cacheKey != null && iconCacheKeys.containsKey(cacheKey)) {
         int count = iconCacheKeys.get(cacheKey);
         count--;
         if (count < 1) {
